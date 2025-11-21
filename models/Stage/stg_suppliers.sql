@@ -1,6 +1,12 @@
+{{ config(
+    materialized = 'ephemeral'
+) }}
+
+
 with supply as (
     select      
         -- ids
+        
         c.s_suppkey as supplier_id,
         c.s_nationkey as nation_id,
 

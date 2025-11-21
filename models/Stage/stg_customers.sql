@@ -1,6 +1,9 @@
-{{ config(materialized='view') }}
 
-
+{#{ config(
+    tags = 'sample',
+    pre_hook="use warehouse test_wh",
+    post_hook="select * from ANALYTICS.DBT_ATRIVEDI.stg_regions"
+) }#}
 with customers as (
     select
         c_custkey as customer_id,

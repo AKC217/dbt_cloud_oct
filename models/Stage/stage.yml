@@ -1,64 +1,93 @@
+version: 2
+
 models:
+
   - name: stg_regions
-    description: Table with all region information
+    description: "Table with all region information"
     columns:
       - name: region_id
-        description: '{{ doc("Primary_Key")}}'
+        description: "{{ doc('Primary_Key') }}"
         data_tests:
-          - unique 
-          - not_null 
+          - unique
+          - not_null
+
       - name: name
         data_tests:
           - accepted_values:
-              arguments:
-                values: ['ASIA','AFRICA','AMERICA']  
-                config:
-                  store_failures: true 
-                  schema: error   
+              values: ['AFRICA', 'AMERICA', 'ASIA', 'EUROPE', 'MIDDLE EAST', 'SOUTH EAST']
+              config:
+                store_failures: true
+                schema: error
+
 
   - name: stg_nations
+    description: "Table containing nation details"
+    config:
+      group: sales
+      contract:
+        enforced: true
     columns:
       - name: nation_id
         data_tests:
-          - unique 
-          - not_null 
+          - unique
+          - not_null
+
       - name: region_id
-        description: '{{ doc("Foreign_Key")}}'
+        description: "{{ doc('Foreign_Key') }}"
         data_tests:
           - relationships:
               to: ref('stg_regions')
               field: region_id
 
+      - name: updated_at
+        data_type: timestamp
+        constraints:
+          - type: not_null
+
+      - name: nation_name
+        data_type: string
+        constraints:
+          - type: not_null
+
+
   - name: stg_line_items
     description: "All items for each order"
     columns:
       - name: order_item_id
-        description: '{{ doc("Primary_Key")}} '
-        
+        description: "{{ doc('Primary_Key') }}"
+
+
   - name: stg_customers
+    config:
+      pre_hook: "alter session set query_tag= hooks"
+      group: sales
     columns:
       - name: customer_id
         data_tests:
-          - unique 
+          - unique
           - not_null
+
       - name: nation_id
-        data_tests:  
+        data_tests:
           - relationships:
               to: ref('stg_nations')
               field: nation_id
+
 
   - name: stg_orders
     columns:
       - name: order_id
         data_tests:
-          - unique 
+          - unique
           - not_null
+
       - name: customer_id
         data_tests:
           - relationships:
               to: ref('stg_customers')
               field: customer_id
+
       - name: status_code
         data_tests:
           - accepted_values:
-              values: ['P','F','O']
+              values: ['P', 'F', 'O']
