@@ -5,17 +5,18 @@ with source as (
 changed as (
     select 
         -- identifiers
-        l_orderkey as order_item_id,
+        {{dbt_utils.generate_surrogate_key(['l_orderkey','l_linenumber '])}} as order_item_id,
         l_orderkey as order_id,
         l_partkey as part_id,
         l_suppkey as supplier_id,
-        l_linenumber as line_number,
+        --l_linenumber as line_number
+    
 
-        -- quantities and prices
+        -- descriptions
         l_linenumber as line_number,
-        l_comment as comment
-        l_shipmode as shipping_mode,
-        l_shipinstruct as shipping_instructions,
+        l_comment as comment,
+        l_shipmode as ship_mode,
+        l_shipinstruct as ship_instructions,
 
 
         l_quantity as quantity,
@@ -30,10 +31,10 @@ changed as (
         -- dates
         l_shipdate as ship_date,
         l_commitdate as commit_date,
-        l_receiptdate as receipt_date,
+        l_receiptdate as receipt_date
 
         
     from source
 )
 
-select * from changed;
+select * from changed

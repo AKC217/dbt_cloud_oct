@@ -11,6 +11,7 @@ sources:
       - name: nations
       - name: suppliers
       - name: orders
+
         config:
           freshness:
             warn_after: {count: 1, period: hour}
@@ -18,9 +19,10 @@ sources:
           loaded_at_field: o_orderdate::timestamp_ntz
       - name: lineitems
       - name: parts
+      - name : partsupps
 
   - name: mkm
-    database: ANALYTICS
-    schema: MKMALL
+    database: mkmotors_dev
+    schema: staging
     tables:
       - name: stg_employees

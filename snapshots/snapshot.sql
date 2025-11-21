@@ -1,22 +1,13 @@
-{% snapshot scd_orders%}
-{{config(target_database= 'Analytics', target_schema= 'SCDS', alias='v3',unique_key='o_orderkey',strategy='check',check_cols=['o_orderpriority','o_orderdate','o_comment'], hard_deletes='new_record')}}
+{% snapshot scd_orders %}
+{{config(target_database= 'Analytics',
+ target_schema= 'SCDS',
+  alias='v3',
+  unique_key='o_orderkey',
+  strategy='check',
+  check_cols=['o_orderpriority','o_orderdate','o_comment'],
+   hard_deletes='new_record')}}
 select * from {{ source('src', 'orders')}}
-{% endsnapshot%}
+{% endsnapshot %}
 
 
 
--- {% snapshot scd_orders %}
-
--- {{
---   config(
---     target_database='Analytics',
---     target_schema='scds',
---     unique_key='o_orderkey',
---     strategy='timestamp',
---     updated_at='o_orderdate',
---     hard_deletes= 'new_record'
---   )
--- }}
-
---     select * from {{ source('src','orders')}}
--- {% endsnapshot %}
