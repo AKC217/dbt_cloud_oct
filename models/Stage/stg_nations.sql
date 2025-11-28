@@ -1,11 +1,21 @@
-{{ config( alias= this.name + var('v_id'),
-access ='private')}}
+{{ config(
+    alias = this.name ~ var('v_id'),
+    access = 'private'
+) }}
 
-with nation as (select 
-    n_nationkey as nation_id,
-    n_name as name,
-    n_regionkey as region_id,
-    current_timestamp() as updated_at
-from {{ source('src', 'nations') }}
+WITH customers AS (
+    SELECT
+        id,
+        customer,
+
+        -- Adds the run start timestamp (UTC by default)
+        '{{ run_started_at.strftime("%Y-%m-%d %H:%M:%S") }}' AS run_started_at_utc,
+
+        -- Unique dbt invocation ID for auditing
+        '{{ invocation_id }}' AS invocation_id
+
+    FROM {{ source('src', 'customers') }}
 )
-select * from nation
+
+SELECT *
+FROM customers;
