@@ -1,17 +1,27 @@
 {{ config(
-    tags = 'sample'
+    materialized = 'dynamic_table',
+    target_lag = '10 minutes',
+    snowflake_warehouse = 'TRANSFORM_WH'
 ) }}
-WITH supply AS (
+
+WITH dy AS (
     SELECT
-        S_SUPPKEY      AS supplier_id,
-        S_NATIONKEY    AS nation_id,
-        S_NAME         AS supplier_name,
-        S_ADDRESS      AS supplier_address,
-        S_PHONE        AS phone_number,
-        S_COMMENT      AS supplier_comment,
-        S_ACCTBAL      AS account_balance,
-        UPDATED_TIME   AS updated_time
-    FROM {{ source("src", "suppliers") }}
+        s.supplier_id AS supplier_id,
+        s.supplier_name AS supplier_name,
+        s.nation_id AS nation_id,
+        s.account_balance AS account_balance,
+        s.supplier_address AS supplier_address,
+        s.phone_number AS phone_number,
+        s.comment AS supplier_comment,   -- FIXED COLUMN NAME
+        s.updated_time AS last_updated_at,
+
+        CASE 
+            WHEN s.account_balance > 1000 THEN 'High Value Supplier'
+            WHEN s.account_balance BETWEEN 0 AND 1000 THEN 'Regular Supplier'
+            ELSE 'Low Balance Supplier'
+        END AS supplier_type
+
+    FROM {{ ref('stg_suppliers') }} s
 )
 
-SELECT * FROM supply
+SELECT * FROM dy
